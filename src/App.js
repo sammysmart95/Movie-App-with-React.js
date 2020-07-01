@@ -4,8 +4,6 @@ import Search from "./components/Search";
 import Results from "./components/Results";
 import Popup from "./components/Popup";
 
-// console.log(process.env.REACT_APP_IMDB_API_KEY);
-
 const App = () => {
   const key = process.env.REACT_APP_IMDB_API_KEY;
   const apiurl = "http://www.omdbapi.com/";
