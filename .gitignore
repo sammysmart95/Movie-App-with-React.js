@@ -3,6 +3,10 @@
 # api keys
 .env
 
+# yarn
+
+yarn.lock
+
 # dependencies
 /node_modules
 /.pnp
