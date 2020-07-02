@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Search from "./components/Search";
 import Results from "./components/Results";
@@ -10,45 +10,56 @@ const App = () => {
   const apikey = `&apikey=${key}`;
 
   const [state, setState] = useState({
-    text: "",
     results: [],
     selected: {},
   });
 
+  const [searchValue, setSearchValue] = useState("");
+
+  useEffect(() => {
+    search(searchValue);
+    // eslint-disable-next-line
+  }, [searchValue]);
+
   const handleInput = (e) => {
-    let text = e.target.value;
-    setState((prevState) => {
-      return { ...prevState, text: text };
-    });
+    setSearchValue(e.target.value);
   };
 
-  const search = (e) => {
-    if (e.key === "Enter") {
-      axios(apiurl + "?s=" + state.text + apikey).then(({ data }) => {
+  const search = (value) => {
+    axios
+      .get(apiurl + "?s=" + value + apikey)
+      .then(({ data }) => {
         let results = data.Search;
-        console.log(results);
+        // console.log(results);
         setState((prevState) => {
           return {
             ...prevState,
-            results: results,
+            results: results ? results : prevState.results,
           };
         });
+      })
+      .catch((err) => {
+        window.alert(err);
       });
-    }
   };
 
   const openPopup = (id) => {
-    axios(apiurl + "?i=" + id + apikey).then(({ data }) => {
-      let result = data;
-      console.log(result);
-      setState((prevState) => {
-        return {
-          ...prevState,
-          selected: result,
-        };
+    axios(apiurl + "?i=" + id + apikey)
+      .then(({ data }) => {
+        let result = data;
+        // console.log(result);
+        setState((prevState) => {
+          return {
+            ...prevState,
+            selected: result,
+          };
+        });
+      })
+      .catch((err) => {
+        window.alert(err);
       });
-    });
   };
+
   const closePopup = () => {
     setState((prevState) => {
       return {
@@ -57,13 +68,14 @@ const App = () => {
       };
     });
   };
+
   return (
     <div className="App">
       <header>
         <h1>Movie Database App</h1>
       </header>
       <main>
-        <Search handleInput={handleInput} search={search} />
+        <Search handleInput={handleInput} search={() => search(searchValue)} />
 
         <Results results={state.results} openPopup={openPopup} />
 
